@@ -1,5 +1,9 @@
-class Tree:
 
+""" Tree class. """
+
+from ete3 import Tree as EteTree
+
+class Tree:
     def __init__(self, node, children=None):
         self.node = node
         self.children = children 
@@ -19,12 +23,9 @@ class Tree:
         else:
             self.children = [child]
 
-
     def __str__(self):
-        entry = self.node.Type + " " + str(self.node.value)
         if self.children:
-            for i in range(len(self.children)):
-                entry += "\n"
-                entry += str(i) + ": " + str(self.children[i])
-
-        return entry
+            s = "({0});".format(",".join([str(child) for child in self.children]))
+            return str(EteTree(s))
+        else:
+            return str(self.node.value.num)
