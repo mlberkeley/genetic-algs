@@ -3,18 +3,18 @@
 
 from ete3 import Tree as EteTree
 
-class Tree:
+class Tree(object):
     def __init__(self, node, children=None):
         self.node = node
-        self.children = children 
-        
+        self.children = children
+
     def get_children(self):
-        return children
+        return self.children
 
     def entry(self):
         return self.node
 
-    def isLeaf(self):
+    def is_leaf(self):
         return bool(self.children)
 
     def add_child(self, child):
