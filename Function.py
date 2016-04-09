@@ -1,23 +1,21 @@
-import operator
-import random
 
-class Function: # will replace with sympy function later
+from operator import add, mul
+from random import uniform
 
-    functions = [operator.add, operator.mul, pow] 
+class Function(object): # will replace with sympy function later
+
+    functions = [add, mul, pow] 
 
     def __init__(self, index_of_func, arity = 2):
         self.function = self.functions[index_of_func]
         self.arity = arity
 
     def random_function():
-        index = int(random.uniform(0,3))
+        index = int(uniform(0, 3))
         return Function(index)
 
     def arity(self):
         return self.arity
 
     def __str__(self):
-        return "Function: " + str(self.function) + ", arity: " + str(self.arity)
-
-
-
+        return "Function: {0}, arity: {1}".format(self.function, str(self.arity))

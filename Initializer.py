@@ -1,10 +1,10 @@
+
 from Function import Function
 from Tree import Tree
 from Node import Node
 from Terminal import Terminal
 
 class Initializer:
-
     def create_full_tree(depth):
         if depth == 0:
             terminal = Terminal.random_terminal()
@@ -18,13 +18,10 @@ class Initializer:
                 result.add_child(Initializer.create_full_tree(depth - 1))
             return result
 
-
     def create_grow_tree(depth):
+        # TODO
         return
 
-    def main():
-        tree = Initializer.create_full_tree(2)
-        print(tree)
-
-
-Initializer.main()
+if __name__ == "__main__":
+    tree = Initializer.create_full_tree(2)
+    print(tree)
