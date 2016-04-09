@@ -10,7 +10,8 @@ from terminal import Terminal
 class Tree(object):
     def __init__(self, node, children=None):
         self.node = node
-        self.children = children
+        if children is None:
+            self.children = []
 
     def get_children(self):
         return self.children
@@ -19,13 +20,22 @@ class Tree(object):
         return self.node
 
     def is_leaf(self):
-        return bool(self.children)
+        return self.children is None
 
     def add_child(self, child):
-        if self.children:
-            self.children.append(child)
-        else:
-            self.children = [child]
+        self.children.append(child)
+
+    def grow(self, depth=None):
+        """ Grows a random node by 1, limited by `depth` (if provided)
+            and arity restrictions.  Returns the new tree (or None if no
+            node can be expanded).
+
+        Args:
+            depth: int (default=None)
+
+        Returns:
+            Tree instance (or None)
+        """
 
     @staticmethod
     def create_full_tree(depth):
