@@ -36,6 +36,7 @@ class Tree(object):
         Returns:
             Tree instance (or None)
         """
+        pass
 
     @staticmethod
     def create_full_tree(depth):
@@ -49,11 +50,11 @@ class Tree(object):
         """
         if depth == 0:
             terminal = Terminal.random_terminal()
-            node = Node("terminal", terminal)
+            node = Node(NodeType.TERMINAL, terminal)
             return Tree(node)
         else:
             function = Function.random_function()
-            root_node = Node("function", function)
+            root_node = Node(NodeType.FUNCTION, function)
             result = Tree(root_node)
             for _ in range(2):  #function.arity()
                 result.add_child(Tree.create_full_tree(depth - 1))
