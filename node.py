@@ -38,21 +38,41 @@ class Node(object):
         descendants.add(self)
         return descendants
 
-    def all_descendants_and_depths(self):
+    def descendants_and_self_with_depths(self):
         """ Returns a set of tuples of all Node objects that are descendants of this
             Node and the depth of those nodes relative to this node.
 
             Returns:
                 set of (Node, int) objects
         """
-        # TODO
         descendants = set()
         for child in self.children:
             incremented_depths = [(node, depth + 1)
                                   for (node, depth)
-                                  in child.all_descendants_and_depths()]
+                                  in child.descendants_and_self_with_depths()]
             descendants = descendants.union(incremented_depths)
+        descendants.add((self, 0))
         return descendants
+
+    def random_descendant(self, with_leaves=False):
+        """ Returns a random descendant (not including itself).
+
+            Args:
+                with_leaves: boolean for whether to include leaves
+
+            Returns:
+                Node object
+        """
+        # TODO make sure you throw an error if no Nodes can be selected
+        pass
+
+    def random_child(self):
+        """ Returns a random child.
+
+            Returns:
+                Node object
+        """
+        return choice(self.children)
 
     def grow(self, depth=None):
         """ Grows a random child node by 1, limited by `depth` (if provided)
@@ -65,13 +85,15 @@ class Node(object):
         Returns:
             Node instance (or None)
         """
-        # TODO add depth constraint
         # Creates a random permutation of child nodes
-        nodes = list(self.all_descendants())
-        shuffle(nodes)
+        nodes_depths = list(self.descendants_and_self_with_depths())
+        shuffle(nodes_depths)
 
-        for node in nodes:
+        for node, d in nodes_depths:
             if len(node.children) >= node.func.arity:
+                continue
+
+            if d >= depth:
                 continue
 
             func = Function.random_function()
@@ -85,10 +107,30 @@ class Node(object):
     def __str__(self):
         if self.children:
             # TODO add self.label reference
+            # TODO unbreak this
             s = "({0});".format(",".join([str(child) for child in self.children]))
-            return str(EteTree(s))
+            return s
+            #return str(EteTree(s))
         else:
             return str(self.func)
+
+    def collapse(self):
+        """ Returns the sympy function corresponding to this node.
+
+            Returns:
+                sympy Function
+        """
+        # TODO
+        pass
+
+    def deepcopy(self):
+        """ Return a deep copy of this Node and its descendants.
+
+            Returns:
+                Node object
+        """
+        # TODO
+        pass
 
 if __name__ == "__main__":
     root = Node(add)
@@ -98,4 +140,7 @@ if __name__ == "__main__":
     root.add_child(b)
 
     print(root)
-    d = (root.descendants_and_self())
+    d = root.descendants_and_self_with_depths()
+    print(d)
+    d = root.descendants_and_self()
+    print(d)

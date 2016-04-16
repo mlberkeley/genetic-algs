@@ -3,7 +3,6 @@
 
 from function import Function
 from node import Node
-from terminal import Terminal
 
 class TreeMethods(object):
     """ A static class that has methods for generating trees. """
@@ -20,7 +19,7 @@ class TreeMethods(object):
         """
         if depth == 0:
             # Generate a leaf node
-            terminal = Terminal.random_terminal()
+            terminal = Function.random_terminal()
             node = Node(terminal)
             return node
         else:
@@ -54,6 +53,13 @@ class TreeMethods(object):
 
         return root
 
+    def mutate_point(self):
+        pass
+
+    def mutate_crossover(self, other_tree):
+        pass
+
+
 if __name__ == "__main__":
-    tree = TreeMethods.create_full_tree(2)
+    tree = TreeMethods.create_full_tree(3)
     print(str(tree))
