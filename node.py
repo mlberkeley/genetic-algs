@@ -54,6 +54,18 @@ class Node(object):
         descendants.add((self, 0))
         return descendants
 
+    def only_descendants(self):
+        """ Returns all Node objects that are descendants of this Node
+            as a set, not including this node.
+
+            Returns:
+                set of Node objects
+        """
+        descendants = set()
+        for child in self.children:
+            descendants = descendants.union(child.descendants_and_self())
+        return descendants
+
     def random_descendant(self, with_leaves=False):
         """ Returns a random descendant (not including itself).
 
@@ -63,8 +75,17 @@ class Node(object):
             Returns:
                 Node object
         """
-        # TODO make sure you throw an error if no Nodes can be selected
-        pass
+        if with_leaves:
+            return choice(self.only_descendants())
+        else:
+            nodes = [node for node in self.only_descendants()
+                          if len(node.children) > 0])
+            if len(nodes) == 0:
+                # ERROR
+                # fuck it
+                # TODO throw real error messages
+                1 / 0
+            return choice(nodes)
 
     def random_child(self):
         """ Returns a random child.
@@ -120,8 +141,12 @@ class Node(object):
             Returns:
                 sympy Function
         """
-        # TODO
-        pass
+        # TODO this is wrong!!!!!!!
+        if self.func.arity == 0:
+            return self.func()
+        else:
+            args = [child.collapse() for child in self.children]
+            return self.func(*args)
 
     def deepcopy(self):
         """ Return a deep copy of this Node and its descendants.

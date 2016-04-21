@@ -1,4 +1,8 @@
 
+""" Module to hold the Data class, which holds information that can be looked
+    up using the `get` method.
+"""
+
 class Data(object):
     """ Data object holds arrays of variables over time. """
     def __init__(fname, sample_freq=44100):

@@ -10,6 +10,16 @@ class Function(object):
         Constants are Functions with 0-arity.
     """
     def __init__(self, func, arity=None, label="f"):
+        """ Function constructor.
+
+            Args:
+                func: lambda Function
+                arity: int (constraint on arguments) (default=None)
+                label: name for function (default="f")
+
+            Returns:
+                Function object
+        """
         self.func = func
         self.arity = arity
         self.label = label
