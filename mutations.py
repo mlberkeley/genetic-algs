@@ -1,29 +1,42 @@
 
 from random import choice, randint
 from function import Function
+from tree_methods import TreeMethods
 
 class Mutations(object):
     @staticmethod
     def mutate_point(node):
         """ Takes a Node object and randomly mutates one of its descendants
-            (or itself) into a function with the same arity. Preserves the
-            original tree.
+            (or itself) \strikeout{into a function with the same arity. Preserves the
+            original tree.} generates a new tree off a random child.
 
             Returns:
                 Node object
         """
+
         # Copy the tree
         new_tree = node.deepcopy()
 
         # Pick a descendant
         descendant = choice(list(new_tree.descendants_and_self()))
 
-        # Pick a function with the same parity
-        arity = descendant.func.arity
-        func = Function.random_function(arity)
+        # Pick a child
 
-        # Mutate new tree
-        descendant.func = func
+        # Make a new tree
+        child = TreeMethods.create_grow_tree(500)
+        if descendant.children:
+            p = randint(0, len(descendant.children) - 1)
+            descendant.children[p] = child
+        else:
+            # Change function to a 2-parity
+            descendant.children.append(child)
+
+        ## Pick a function with the same parity
+        #arity = descendant.func.arity
+        #func = Function.random_function(arity)
+
+        ## Mutate new tree
+        #descendant.func = func
 
         return new_tree
 

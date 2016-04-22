@@ -44,7 +44,7 @@ class TreeMethods(object):
         Returns:
             Node instance
         """
-        func = Function.random_func()
+        func = Function.random_function()
         root = Node(func)
 
         while True:

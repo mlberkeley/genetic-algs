@@ -44,15 +44,16 @@ class Function(object):
                 Function
         """
         # TODO clean
-        if arity is None:
-            functions = [add]
-            return choice(functions)
-        elif arity == 0:
-            return choice([zero, one])
-        elif arity == 2:
-            return choice([add])
+        function_set = {}
+        function_set[0] = [zero, one, t]
+        function_set[2] = [add, mul]
+
+        all_functions = [zero, one, t, add, mul]
+
+        if arity:
+            return choice(function_set[arity])
         else:
-            print("ERROR")
+            return choice(all_functions)
 
     def random_terminal():
         """ Return a random terminal (can be either a terminal or
@@ -61,8 +62,7 @@ class Function(object):
             Returns:
                 0-ary Function
         """
-        functions = [zero, one]
-        return choice(functions)
+        return Function.random_function(arity=0)
 
     def __str__(self):
         return self.label
@@ -77,9 +77,21 @@ class One(sy.Function):
     def eval(cls):
         return sy.Float(1)
 
-zero = Function(Zero,  0, "0")
-one =  Function(One,   0, "1")
-add =  Function(sy.add.Add, 2, "+")
+class Mul(sy.Function):
+    @classmethod
+    def eval(cls, x, y):
+        return x * y
+
+class Time(sy.Function):
+    @classmethod
+    def eval(cls):
+        return sy.Symbol("t")
+
+zero = Function(Zero, 0, "0")
+one = Function(One, 0, "1")
+t = Function(Time, 0, "t")
+add = Function(sy.add.Add, 2, "+")
+mul = Function(sy.add.Mul, 2, "*")
 
 if __name__ == "__main__":
     test(0, zero.evaluate(), "0")

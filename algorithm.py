@@ -3,6 +3,8 @@
 import matplotlib
 matplotlib.use("Qt4Agg")
 
+import matplotlib.pyplot as plt
+
 from random import random
 
 import numpy as np
@@ -27,16 +29,22 @@ class Algorithm(object):
                 sympy Function
         """
         TREE_COUNT = 10
-        GENERATIONS = 50
+        GENERATIONS = 100
         PROB_REPRODUCTION = 0.5
-        PROB_POINT = 0.4
-        PROB_CROSSOVER = 0.1
+        PROB_POINT = 0.5
+        #PROB_CROSSOVER = 0.1
+        PROB_CROSSOVER = 0
+
+        THRESHOLD = -1e-5
 
         # Generate a pool of trees
-        trees = [TreeMethods.create_full_tree(2) for _ in range(TREE_COUNT)]
+        # TODO what if create_grow_tree gives us a + node as a leaf?
+        trees = [TreeMethods.create_grow_tree(500) for _ in range(TREE_COUNT)]
 
         # For animation
         gif_fnames = []
+
+        best_fitnesses = []
 
         for i in range(GENERATIONS):
             print("Generation: {0}".format(i))
@@ -53,10 +61,24 @@ class Algorithm(object):
                 fitnesses.append(fitness)
             fitnesses = np.array(fitnesses)
 
+            # Save best fitness
+            best_fitnesses.append(np.max(fitnesses))
+
+            # If a fitness is super good just end the algorithm
+            if np.max(fitnesses) > THRESHOLD:
+                print("Threshold reached! Ending.")
+                break
+
             # Translate and normalize fitnesses until they form a
             # probability distribution
+            #fitnesses += -np.min(fitnesses) + 1e-5
+            #fitnesses /= np.sum(fitnesses)
 
-            fitnesses += -np.min(fitnesses) + 1e-5
+            # TODO change this
+            # Use an extremely nonlinear probability function
+            fitnesses *= -1
+            fitnesses += 1e-5
+            fitnesses = 1/fitnesses
             fitnesses /= np.sum(fitnesses)
 
             while len(new_trees) <= TREE_COUNT:
@@ -69,6 +91,10 @@ class Algorithm(object):
                 elif r < PROB_POINT + PROB_CROSSOVER:
                     # Crossover mutation
                     [ctree1, ctree2] = np.random.choice(trees, 2, p=fitnesses)
+                    if len(ctree1.children) == 0 or len(ctree2.children) == 0:
+                        # TODO handle this case somehow
+                        # Abort, we dun goofed
+                        continue
                     tree1, tree2 = Mutations.mutate_crossover(ctree1, ctree2)
                     new_trees.append(tree1)
                     new_trees.append(tree2)
@@ -80,9 +106,17 @@ class Algorithm(object):
 
             trees = new_trees
 
+        # Plot fitnesses
+        fig, ax = plt.subplots()
+        ax.set_title("Fitness vs. Iterations")
+        ax.set_xlabel("Iterations")
+        ax.set_ylabel("Fitness")
+        ax.plot(best_fitnesses)
+        fig.savefig("demo/fitness.png")
+
         # Animate pool
-        animation = mpy.ImageSequenceClip(gif_fnames, fps=10)
-        animation.write_gif("demo/animation.gif", fps=10)
+        animation = mpy.ImageSequenceClip(gif_fnames, fps=1)
+        animation.write_gif("demo/animation.gif", fps=1)
 
         # Return trees
         scores = [Evaluator.score(tree, data, node_var) for tree in trees]
@@ -111,7 +145,7 @@ class Algorithm(object):
         total_width = sum(widths)
         max_height = max(heights)
         
-        new_im = Image.new('RGB', (total_width, max_height))
+        new_im = Image.new('RGB', (total_width, max_height), "white")
         
         x_offset = 0
         for im in images:
@@ -121,6 +155,7 @@ class Algorithm(object):
         new_im.save(fname)
 
 if __name__ == "__main__":
-    #data = Data("pendulum.pkl")
-    data = Data("const.pkl")
+    data = Data("pendulum.pkl")
+    #data = Data("const.pkl")
+    #data = Data("linear.pkl")
     print(Algorithm.make_function(data, "x"))

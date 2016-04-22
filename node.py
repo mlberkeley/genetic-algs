@@ -1,5 +1,5 @@
 
-from function import zero, one, add
+from function import zero, one, add, Function
 from random import shuffle, choice
 
 from ete3 import Tree as EteTree, TreeStyle, NodeStyle, faces, AttrFace
@@ -78,7 +78,7 @@ class Node(object):
         if with_leaves:
             return choice(self.only_descendants())
         else:
-            nodes = [node for node in self.only_descendants()
+            nodes = [node for node in self.descendants_and_self()
                           if len(node.children) > 0]
             if len(nodes) == 0:
                 # ERROR
@@ -118,9 +118,9 @@ class Node(object):
                 continue
 
             func = Function.random_function()
-            node = Node(func)
-            self.add_child(node)
-            return node
+            child = Node(func)
+            node.add_child(child)
+            return child
 
         # If no children can be expanded, return None
         return None
