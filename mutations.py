@@ -50,7 +50,6 @@ class Mutations(object):
         child_index2 = randint(0, len(descendant2.children) - 1)
 
         # Cross over children
-        # TODO fugly
         descendant1.children[child_index1], descendant2.children[child_index2] = \
             descendant2.children[child_index2], descendant1.children[child_index1]
 

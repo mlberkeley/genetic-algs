@@ -40,11 +40,4 @@ class Evaluator(object):
             if residuals < best_error:
                 best_error = residuals
 
-       return best_error
-        
-
-    @staticmethod
-    def evaluate(node, data, time):
-        # TODO not sure if useful
-        return node.func(*[Evaluator.evaluate(child, data, time)
-                           for child in node.children])
+        return best_error

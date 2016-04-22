@@ -53,13 +53,7 @@ class TreeMethods(object):
 
         return root
 
-    def mutate_point(self):
-        pass
-
-    def mutate_crossover(self, other_tree):
-        pass
-
-
 if __name__ == "__main__":
-    tree = TreeMethods.create_full_tree(3)
-    print(str(tree))
+    for i in range(10):
+        tree = TreeMethods.create_full_tree(3)
+        tree.ete_draw("demo/tree{0}.png".format(i))

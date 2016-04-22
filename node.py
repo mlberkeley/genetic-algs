@@ -1,8 +1,8 @@
 
-from function import zero, one, add, sub
+from function import zero, one, add
 from random import shuffle
 
-from ete3 import Tree as EteTree
+from ete3 import Tree as EteTree, TreeStyle, NodeStyle, faces, AttrFace
 
 class Node(object):
     def __init__(self, func):
@@ -79,7 +79,7 @@ class Node(object):
             return choice(self.only_descendants())
         else:
             nodes = [node for node in self.only_descendants()
-                          if len(node.children) > 0])
+                          if len(node.children) > 0]
             if len(nodes) == 0:
                 # ERROR
                 # fuck it
@@ -125,15 +125,39 @@ class Node(object):
         # If no children can be expanded, return None
         return None
 
-    def __str__(self):
+    def ete_str_nosemi(self):
         if self.children:
-            # TODO add self.label reference
-            # TODO unbreak this
-            s = "({0});".format(",".join([str(child) for child in self.children]))
-            return s
-            #return str(EteTree(s))
+            s = ",".join([c.ete_str_nosemi() for c in self.children])
+            return "({0}){1}".format(s, self.func.label)
         else:
-            return str(self.func)
+            return self.func.label
+
+    def ete_str(self):
+        return "{0};".format(self.ete_str_nosemi())
+
+    def ete_print(self):
+        """ Pretty print. """
+        t = EteTree(self.ete_str(), format=1)
+        print(t.get_ascii(show_internal=True))
+
+    def ete_draw(self, fname):
+        """ Draws the tree and saves it to a file.
+
+            Args:
+                fname: filename to save to
+        """
+        def layout(node):
+            faces.add_face_to_node(AttrFace("name"), node, column=0,
+                                   position="branch-right")
+
+        ts = TreeStyle()
+        ts.show_leaf_name = False
+        ts.layout_fn = layout
+        ts.rotation = 90
+        
+        tree = EteTree(self.ete_str(), format=8)
+
+        tree.render(fname, tree_style=ts)
 
     def collapse(self):
         """ Returns the sympy function corresponding to this node.
@@ -143,10 +167,10 @@ class Node(object):
         """
         # TODO this is wrong!!!!!!!
         if self.func.arity == 0:
-            return self.func()
+            return self.func.evaluate()
         else:
             args = [child.collapse() for child in self.children]
-            return self.func(*args)
+            return self.func.evaluate(*args)
 
     def deepcopy(self):
         """ Return a deep copy of this Node and its descendants.
@@ -154,8 +178,8 @@ class Node(object):
             Returns:
                 Node object
         """
-        # TODO
-        pass
+        new_root = Node(self.func)
+        new_root.children = [child.deepcopy() for child in self.children]
 
 if __name__ == "__main__":
     root = Node(add)

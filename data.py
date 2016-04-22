@@ -3,14 +3,20 @@
     up using the `get` method.
 """
 
+import pickle
+import numpy as np
+
 class Data(object):
     """ Data object holds arrays of variables over time. """
-    def __init__(fname, sample_freq=44100):
+    def __init__(self, fname):
         # TODO
         # Load all variables and computes derivatives
         # Stores it in dictionary
-        self._data = {}
-        self._sample_freq = sample_freq
+
+        pkl_obj = pickle.load(open(fname, "rb"))
+
+        self._data = pkl_obj["arrays"]
+        self._sample_period = pkl_obj["sample_period"]
 
     def times(self):
         """ Returns a linspace of times to be evaluated.
@@ -19,7 +25,7 @@ class Data(object):
                 numpy array of floats
         """
         samples = len(self._data["t"])  # TODO clean this up
-        period = 1 / self.sample_freq
+        period = self._sample_period
         return np.linspace(0, period * samples, samples)
 
     def variables(self):
@@ -37,5 +43,4 @@ class Data(object):
         return self._data[var]
 
 if __name__ == "__main__":
-    # TODO test
-    pass
+    data = Data("pendulum.pkl")

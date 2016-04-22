@@ -1,6 +1,10 @@
 
 import numpy as np
 
+from data import Data
+from evaluator import Evaluator
+from tree_methods import TreeMethods
+
 class Algorithm(object):
     @staticmethod
     def make_function(data, node_var):
@@ -20,7 +24,8 @@ class Algorithm(object):
         PROB_CROSSOVER = 0.1
 
         # Generate a pool of trees
-        trees = [generate_tree() for _ in range(TREE_COUNT)]
+        #trees = [generate_tree() for _ in range(TREE_COUNT)]
+        trees = [TreeMethods.create_full_tree(2) for _ in range(TREE_COUNT)]
 
         for _ in range(GENERATIONS):
             new_trees = []
@@ -57,5 +62,5 @@ class Algorithm(object):
         return best_tree.collapse()
 
 if __name__ == "__main__":
-    #run()
-    pass
+    data = Data("pendulum.pkl")
+    Algorithm.make_function(data, "x")

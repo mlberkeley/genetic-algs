@@ -1,4 +1,6 @@
 
+import sympy as sy
+
 from random import choice
 
 from test import test
@@ -13,7 +15,7 @@ class Function(object):
         """ Function constructor.
 
             Args:
-                func: lambda Function
+                func: sympy Function or Symbol
                 arity: int (constraint on arguments) (default=None)
                 label: name for function (default="f")
 
@@ -25,7 +27,10 @@ class Function(object):
         self.label = label
 
     def evaluate(self, *args):
-        return self.func(*args)
+        if self.arity == 0:
+            return self.func
+        else:
+            return self.func(*args)
 
     def random_function(arity=None):
         """ Return a random function (can be either a terminal or
@@ -40,12 +45,12 @@ class Function(object):
         """
         # TODO clean
         if arity is None:
-            functions = [add, sub]
+            functions = [add]
             return choice(functions)
         elif arity == 0:
             return choice([zero, one])
         elif arity == 2:
-            return choice([add, sub])
+            return choice([add])
         else:
             print("ERROR")
 
@@ -62,10 +67,19 @@ class Function(object):
     def __str__(self):
         return self.label
 
-zero = Function(lambda: 0,          0, "0")
-one =  Function(lambda: 1,          0, "1")
-add =  Function(lambda a, b: a + b, 2, "+")
-sub =  Function(lambda a, b: a - b, 2, "-")
+class Zero(sy.Function):
+    @classmethod
+    def eval(cls, x):
+        return sy.S.Zero
+
+class One(sy.Function):
+    @classmethod
+    def eval(cls):
+        return sy.S.One
+
+zero = Function(Zero,  0, "0")
+one =  Function(One,   0, "1")
+add =  Function(sy.add.Add, 2, "+")
 
 if __name__ == "__main__":
     test(0, zero.evaluate(), "0")

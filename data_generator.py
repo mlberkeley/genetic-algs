@@ -45,6 +45,7 @@ def make_pendulum(m, l, angle_0, t=10, sample_period=1e-2, fname="pendulum.pkl")
     # Save data
     data = {}
     data["arrays"] = {}
+    data["arrays"]["t"] = times
     data["arrays"]["x"] = xs
     data["arrays"]["y"] = ys
 
