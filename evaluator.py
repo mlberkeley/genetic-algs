@@ -1,4 +1,5 @@
 
+import numpy as np
 import sympy as sy
 
 class Evaluator(object):
@@ -21,7 +22,7 @@ class Evaluator(object):
         # Evaluate function
         times = data.times()
 
-        best_error = 9999999999
+        worst_error = 9999999999
         for y in data.variables():
             if node_var == y:
                 continue
@@ -30,14 +31,15 @@ class Evaluator(object):
             dxdy = func.diff(sy.Symbol(y))
 
             residuals = 0
+            t_sym = sy.Symbol("t")
             for i, t in enumerate(times[:-1]):
                 delx = data.get(node_var)[i+1] - data.get(node_var)[i]
                 dely = data.get(y)[i+1] - data.get(y)[i]
-                residual = dxdy(t) - delx / dely
+                residual = float(dxdy.subs(t_sym, t) - delx / dely)
                 residuals += np.log(1 + abs(residual))
             residuals *= -1.0 / len(times)
 
-            if residuals < best_error:
-                best_error = residuals
+            if residuals < worst_error:
+                worst_error = residuals
 
-        return best_error
+        return worst_error

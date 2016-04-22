@@ -28,7 +28,7 @@ class Function(object):
 
     def evaluate(self, *args):
         if self.arity == 0:
-            return self.func
+            return self.func()
         else:
             return self.func(*args)
 
@@ -69,13 +69,13 @@ class Function(object):
 
 class Zero(sy.Function):
     @classmethod
-    def eval(cls, x):
-        return sy.S.Zero
+    def eval(cls):
+        return sy.Float(0)
 
 class One(sy.Function):
     @classmethod
     def eval(cls):
-        return sy.S.One
+        return sy.Float(1)
 
 zero = Function(Zero,  0, "0")
 one =  Function(One,   0, "1")

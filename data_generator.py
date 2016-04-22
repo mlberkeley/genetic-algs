@@ -55,4 +55,4 @@ def make_pendulum(m, l, angle_0, t=10, sample_period=1e-2, fname="pendulum.pkl")
     pickle.dump(data, open(fname, "wb"))
 
 if __name__ == "__main__":
-    make_pendulum(1, 10, 1)
+    make_pendulum(1, 10, 1, t=0.1)

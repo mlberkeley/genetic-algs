@@ -1,6 +1,6 @@
 
 from function import zero, one, add
-from random import shuffle
+from random import shuffle, choice
 
 from ete3 import Tree as EteTree, TreeStyle, NodeStyle, faces, AttrFace
 
@@ -140,11 +140,12 @@ class Node(object):
         t = EteTree(self.ete_str(), format=1)
         print(t.get_ascii(show_internal=True))
 
-    def ete_draw(self, fname):
-        """ Draws the tree and saves it to a file.
+    def ete_draw(self, fname=None):
+        """ Draws the tree and saves it to a file.  If `fname` is None,
+            show the tree instead of saving it.
 
             Args:
-                fname: filename to save to
+                fname: filename to save to (default=None)
         """
         def layout(node):
             faces.add_face_to_node(AttrFace("name"), node, column=0,
@@ -157,7 +158,10 @@ class Node(object):
         
         tree = EteTree(self.ete_str(), format=8)
 
-        tree.render(fname, tree_style=ts)
+        if fname:
+            tree.render(fname, tree_style=ts)
+        else:
+            tree.show(tree_style=ts)
 
     def collapse(self):
         """ Returns the sympy function corresponding to this node.
@@ -180,6 +184,8 @@ class Node(object):
         """
         new_root = Node(self.func)
         new_root.children = [child.deepcopy() for child in self.children]
+
+        return new_root
 
 if __name__ == "__main__":
     root = Node(add)

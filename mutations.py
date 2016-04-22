@@ -1,5 +1,6 @@
 
 from random import choice, randint
+from function import Function
 
 class Mutations(object):
     @staticmethod
@@ -15,7 +16,7 @@ class Mutations(object):
         new_tree = node.deepcopy()
 
         # Pick a descendant
-        descendant = choice(new_tree.descendants_with_self())
+        descendant = choice(list(new_tree.descendants_and_self()))
 
         # Pick a function with the same parity
         arity = descendant.func.arity
