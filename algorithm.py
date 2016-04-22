@@ -1,7 +1,13 @@
 
+# TODO ugly hack to appease Roy's laptop
+import matplotlib
+matplotlib.use("Qt4Agg")
+
 from random import random
 
 import numpy as np
+from PIL import Image
+import moviepy.editor as mpy
 
 from data import Data
 from evaluator import Evaluator
@@ -27,12 +33,18 @@ class Algorithm(object):
         PROB_CROSSOVER = 0.1
 
         # Generate a pool of trees
-        #trees = [generate_tree() for _ in range(TREE_COUNT)]
         trees = [TreeMethods.create_full_tree(2) for _ in range(TREE_COUNT)]
-        #for tree in trees:
-        #    tree.ete_draw()
+
+        # For animation
+        gif_fnames = []
 
         for i in range(GENERATIONS):
+            print("Generation: {0}".format(i))
+            # Draw pool
+            gif_fname = "temp/_iteration_{0}.png".format(i)
+            gif_fnames.append(gif_fname)
+            Algorithm.draw_pool(trees, gif_fname)
+
             new_trees = []
 
             fitnesses = []
@@ -66,11 +78,49 @@ class Algorithm(object):
                     tree = candidate_tree.deepcopy()
                     new_trees.append(tree)
 
+            trees = new_trees
+
+        # Animate pool
+        animation = mpy.ImageSequenceClip(gif_fnames, fps=10)
+        animation.write_gif("demo/animation.gif", fps=10)
+
         # Return trees
         scores = [Evaluator.score(tree, data, node_var) for tree in trees]
         best_tree = trees[np.argmax(scores)]
         return best_tree.collapse()
 
+    @staticmethod
+    def draw_pool(pool, fname):
+        # TODO move this method?
+        """ Draws a list of trees.
+
+            Args:
+                pool: list of trees
+                fname: filename to save image to
+        """
+        fnames = []
+        for i, tree in enumerate(pool):
+            f = "temp/_temp_{0}.png".format(i)
+            tree.ete_draw(f)
+            fnames.append(f)
+
+        # Stolen from StackOverflow
+        images = [Image.open(f) for f in fnames]
+        widths, heights = zip(*(i.size for i in images))
+
+        total_width = sum(widths)
+        max_height = max(heights)
+        
+        new_im = Image.new('RGB', (total_width, max_height))
+        
+        x_offset = 0
+        for im in images:
+            new_im.paste(im, (x_offset,0))
+            x_offset += im.size[0]
+        
+        new_im.save(fname)
+
 if __name__ == "__main__":
-    data = Data("pendulum.pkl")
-    Algorithm.make_function(data, "x")
+    #data = Data("pendulum.pkl")
+    data = Data("const.pkl")
+    print(Algorithm.make_function(data, "x"))

@@ -54,5 +54,36 @@ def make_pendulum(m, l, angle_0, t=10, sample_period=1e-2, fname="pendulum.pkl")
 
     pickle.dump(data, open(fname, "wb"))
 
+def make_const(x, t=10, sample_period=1e-2, fname="const.pkl"):
+    """ Simulate a constant.
+
+        Args:
+            x: constant
+            t: time to run the simulation (in seconds) (default=10)
+            fname: filename to save .pkl file to (default="const.pkl")
+
+        Outputs:
+            pickled dictionary file with the following mappings:
+            "x": constant value
+            "sample_period": time per sample (in seconds)
+    """
+    # Solution to the system is theta = Acos(wt)
+    times = np.arange(0, t, sample_period)
+
+    # TODO this is kinda dumb
+    xs = np.array([x for _ in times])
+
+    # Save data
+    data = {}
+    data["arrays"] = {}
+    data["arrays"]["t"] = times
+    data["arrays"]["x"] = xs
+
+    # Save sample period
+    data["sample_period"] = sample_period
+
+    pickle.dump(data, open(fname, "wb"))
+
 if __name__ == "__main__":
     make_pendulum(1, 10, 1, t=0.1)
+    make_const(3, t=0.1)
