@@ -1,5 +1,5 @@
 
-from function import zero, one, add, Function
+from function import add, Function
 from random import shuffle, choice
 
 from ete3 import Tree as EteTree, TreeStyle, NodeStyle, faces, AttrFace
@@ -117,7 +117,10 @@ class Node(object):
             if d >= depth:
                 continue
 
-            func = Function.random_function()
+            if d == depth - 1:
+                func = Function.random_terminal()
+            else:
+                func = Function.random_function()
             child = Node(func)
             node.add_child(child)
             return child
@@ -188,14 +191,4 @@ class Node(object):
         return new_root
 
 if __name__ == "__main__":
-    root = Node(add)
-    a = Node(zero)
-    b = Node(one)
-    root.add_child(a)
-    root.add_child(b)
-
-    print(root)
-    d = root.descendants_and_self_with_depths()
-    print(d)
-    d = root.descendants_and_self()
-    print(d)
+    pass

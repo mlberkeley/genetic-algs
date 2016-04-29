@@ -26,4 +26,6 @@ def plot(fname):
     plt.show()
 
 if __name__ == "__main__":
-    plot("pendulum.pkl")
+    #plot("pendulum.pkl")
+    #plot("linear.pkl")
+    plot("quadratic.pkl")

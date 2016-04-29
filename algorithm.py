@@ -29,17 +29,22 @@ class Algorithm(object):
                 sympy Function
         """
         TREE_COUNT = 10
-        GENERATIONS = 100
+        #GENERATIONS = 100
+        GENERATIONS = 50
         PROB_REPRODUCTION = 0.5
-        PROB_POINT = 0.5
-        #PROB_CROSSOVER = 0.1
-        PROB_CROSSOVER = 0
+        PROB_POINT = 0.4
+        PROB_CROSSOVER = 0.1
 
-        THRESHOLD = -1e-5
+        THRESHOLD = -1e-1
 
         # Generate a pool of trees
-        # TODO what if create_grow_tree gives us a + node as a leaf?
-        trees = [TreeMethods.create_grow_tree(500) for _ in range(TREE_COUNT)]
+        trees = []
+        for _ in range(TREE_COUNT):
+            depth = np.random.randint(2, 6+1)
+            if np.random.random() < 0.5:
+                trees.append(TreeMethods.create_grow_tree(depth))
+            else:
+                trees.append(TreeMethods.create_full_tree(depth))
 
         # For animation
         gif_fnames = []
@@ -48,10 +53,6 @@ class Algorithm(object):
 
         for i in range(GENERATIONS):
             print("Generation: {0}".format(i))
-            # Draw pool
-            gif_fname = "temp/_iteration_{0}.png".format(i)
-            gif_fnames.append(gif_fname)
-            Algorithm.draw_pool(trees, gif_fname)
 
             new_trees = []
 
@@ -61,8 +62,15 @@ class Algorithm(object):
                 fitnesses.append(fitness)
             fitnesses = np.array(fitnesses)
 
+            # Draw pool
+            gif_fname = "temp/_iteration_{0}.png".format(i)
+            gif_fnames.append(gif_fname)
+            Algorithm.draw_pool(trees, gif_fname, fitnesses)
+
             # Save best fitness
-            best_fitnesses.append(np.max(fitnesses))
+            best_fitness = np.max(fitnesses)
+            print("Best fitness: {0}".format(best_fitness))
+            best_fitnesses.append(best_fitness)
 
             # If a fitness is super good just end the algorithm
             if np.max(fitnesses) > THRESHOLD:
@@ -79,6 +87,8 @@ class Algorithm(object):
             fitnesses *= -1
             fitnesses += 1e-5
             fitnesses = 1/fitnesses
+
+            # Normalize
             fitnesses /= np.sum(fitnesses)
 
             while len(new_trees) <= TREE_COUNT:
@@ -124,15 +134,21 @@ class Algorithm(object):
         return best_tree.collapse()
 
     @staticmethod
-    def draw_pool(pool, fname):
+    def draw_pool(pool, fname, fitnesses):
         # TODO move this method?
         """ Draws a list of trees.
 
             Args:
                 pool: list of trees
                 fname: filename to save image to
+                fitnesses: list of fitnesses
         """
         fnames = []
+        
+        # Sort pool by fitness
+        pool = np.array(pool)[np.argsort(fitnesses)]
+        pool = pool[::-1]
+
         for i, tree in enumerate(pool):
             f = "temp/_temp_{0}.png".format(i)
             tree.ete_draw(f)
@@ -155,7 +171,8 @@ class Algorithm(object):
         new_im.save(fname)
 
 if __name__ == "__main__":
-    data = Data("pendulum.pkl")
+    #data = Data("pendulum.pkl")
     #data = Data("const.pkl")
     #data = Data("linear.pkl")
+    data = Data("quadratic.pkl")
     print(Algorithm.make_function(data, "x"))

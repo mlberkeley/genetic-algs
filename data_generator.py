@@ -113,7 +113,40 @@ def make_linear(m, b, t=10, sample_period=1e-2, fname="linear.pkl"):
 
     pickle.dump(data, open(fname, "wb"))
 
+def make_quadratic(a, b, c, t=10, sample_period=1e-2, fname="quadratic.pkl"):
+    """ Simulate a quadratic relationship:
+
+            at^2 + bt + c
+
+        Args:
+            a: degree-2 term
+            b: degree-1 term
+            c: degree-0 term
+            t: time to run the simulation (in seconds) (default=10)
+            fname: filename to save .pkl file to (default="const.pkl")
+
+        Outputs:
+            pickled dictionary file with the following mappings:
+            "x": constant value
+            "sample_period": time per sample (in seconds)
+    """
+    # Solution to the system is theta = Acos(wt)
+    times = np.arange(0, t, sample_period)
+    xs = np.array([a * time ** 2 + b * time + c for time in times])
+
+    # Save data
+    data = {}
+    data["arrays"] = {}
+    data["arrays"]["t"] = times
+    data["arrays"]["x"] = xs
+
+    # Save sample period
+    data["sample_period"] = sample_period
+
+    pickle.dump(data, open(fname, "wb"))
+
 if __name__ == "__main__":
     make_pendulum(1, 10, 1, t=0.1)
     make_const(3, t=0.1)
-    make_linear(5, 0, t=0.1)
+    make_linear(5, 0, t=10, sample_period=1e-1)
+    make_quadratic(1, 0, 0, t=10, sample_period=1e-1)

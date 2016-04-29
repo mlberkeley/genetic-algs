@@ -14,31 +14,30 @@ class Mutations(object):
                 Node object
         """
 
-        # Copy the tree
-        new_tree = node.deepcopy()
+        if len(node.children) == 0:
+            return TreeMethods.create_grow_tree(5)
+        else:
+            # Copy the tree
+            new_tree = node.deepcopy()
 
-        # Pick a descendant
-        descendant = choice(list(new_tree.descendants_and_self()))
+            # Pick a descendant
+            descendant = new_tree.random_descendant(with_leaves=False)
 
-        # Pick a child
+            # Pick a child
 
-        # Make a new tree
-        child = TreeMethods.create_grow_tree(500)
-        if descendant.children:
+            # Make a new tree
+            child = TreeMethods.create_grow_tree(5)
             p = randint(0, len(descendant.children) - 1)
             descendant.children[p] = child
-        else:
-            # Change function to a 2-parity
-            descendant.children.append(child)
 
-        ## Pick a function with the same parity
-        #arity = descendant.func.arity
-        #func = Function.random_function(arity)
+            ## Pick a function with the same parity
+            #arity = descendant.func.arity
+            #func = Function.random_function(arity)
 
-        ## Mutate new tree
-        #descendant.func = func
+            ## Mutate new tree
+            #descendant.func = func
 
-        return new_tree
+            return new_tree
 
     @staticmethod
     def mutate_crossover(node1, node2):
