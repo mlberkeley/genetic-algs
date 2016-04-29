@@ -36,9 +36,9 @@ class Evaluator(object):
                 delx = data.get(node_var)[i+1] - data.get(node_var)[i]
                 dely = data.get(y)[i+1] - data.get(y)[i]
                 residual = float(dxdy.subs(t_sym, t) - delx / dely)
-                #residual2 = abs(func.subs(t_sym, t) - data.get(node_var)[i])
+                residual2 = abs(func.subs(t_sym, t) - data.get(node_var)[i])
                 #residuals += np.log(1 + abs(residual))
-                #residuals += abs(residual) + residual2
+                residuals += abs(residual) + residual2
                 residuals += abs(residual)
             residuals *= -1.0 / len(times)
 
