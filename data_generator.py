@@ -149,4 +149,4 @@ if __name__ == "__main__":
     make_pendulum(1, 10, 1, t=0.1)
     make_const(3, t=0.1)
     make_linear(5, 0, t=10, sample_period=1e-1)
-    make_quadratic(1, 0, 0, t=10, sample_period=1e-1)
+    make_quadratic(4, 5, 2, t=10, sample_period=1e-1)

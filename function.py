@@ -61,6 +61,7 @@ class Function(object):
         if arity is not None:
             if arity == 0:
                 if np.random.random() < PROB_FLOAT:
+                    # TODO take from uniform distribution
                     return Function.random_float()
                 else:
                     return choice(function_set[arity])
@@ -68,6 +69,7 @@ class Function(object):
                 return choice(function_set[arity])
         else:
             if np.random.random() < PROB_FLOAT:
+                # TODO take from uniform distribution
                 return Function.random_float()
             else:
                 return choice(all_functions)

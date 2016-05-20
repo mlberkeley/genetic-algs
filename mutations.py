@@ -67,3 +67,59 @@ class Mutations(object):
             descendant2.children[child_index2], descendant1.children[child_index1]
 
         return (new_tree1, new_tree2)
+    
+    @staticmethod
+    def mutate_float(node, score_tree, eps=1e-1):
+        """ Takes a Node object and optimizes floats greedily.
+            Returns a new tree.
+
+            Args:
+                node: Node object to operate on
+                score_tree: function that takes a tree
+                    and returns a fitness (as float)
+                eps: learning rate (as float) (default=1e-1)
+
+            Returns:
+                Node object
+        """
+        # Copy the tree
+        new_tree = node.deepcopy()
+
+        # Find all floating leaves
+        floats = new_tree.all_floats()
+        if floats == []:
+            return None
+
+        has_changed = False
+
+        for f in floats:
+            value = f.func.func()
+            left_value = value - eps
+            right_value = value + eps
+
+            func = f.func
+            left_func = Function.make_float_function(left_value)
+            left_func = Function(left_func, 0, str(left_value))
+            right_func = Function.make_float_function(right_value)
+            right_func = Function(right_func, 0, str(right_value))
+
+            score = score_tree(new_tree)
+            f.func = left_func
+            left_score = score_tree(new_tree)
+            f.func = right_func
+            right_score = score_tree(new_tree)
+
+            max_ = max(left_score, score, right_score)
+            if abs(max_ - left_score) < 1e-10:
+                f.func = left_func
+                has_changed = True
+            elif abs(max_ - right_score) < 1e-10:
+                f.func = right_func
+                has_changed = True
+            else:
+                f.func = func
+
+        if not has_changed:
+            return None
+
+        return new_tree

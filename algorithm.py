@@ -29,13 +29,18 @@ class Algorithm(object):
                 sympy Function
         """
         TREE_COUNT = 10
-        #GENERATIONS = 100
-        GENERATIONS = 50
-        PROB_REPRODUCTION = 0.5
-        PROB_POINT = 0.4
-        PROB_CROSSOVER = 0.1
+        GENERATIONS = 100
+        #GENERATIONS = 50
+        #PROB_REPRODUCTION = 0.5
+        #PROB_POINT = 0.4
+        #PROB_CROSSOVER = 0.1
+        PROB_REPRODUCTION = 0.4
+        PROB_POINT = 0.25
+        PROB_FLOAT = 0.3
+        PROB_CROSSOVER = 0.05
 
-        THRESHOLD = -1e-1
+        #THRESHOLD = -1e-1
+        THRESHOLD = -1e-3
 
         # Generate a pool of trees
         trees = []
@@ -108,6 +113,17 @@ class Algorithm(object):
                     tree1, tree2 = Mutations.mutate_crossover(ctree1, ctree2)
                     new_trees.append(tree1)
                     new_trees.append(tree2)
+                elif r < PROB_POINT + PROB_CROSSOVER + PROB_FLOAT:
+                    # Float mutation
+                    candidate_tree = np.random.choice(trees, 1, p=fitnesses)[0]
+
+                    def score_tree(tree_):
+                        return Evaluator.score(tree_, data, node_var)
+
+                    tree = Mutations.mutate_float(candidate_tree,
+                        score_tree, eps=THRESHOLD)
+                    if tree is not None:
+                        new_trees.append(tree)
                 else:
                     # Reproduction mutation
                     candidate_tree = np.random.choice(trees, 1, p=fitnesses)[0]

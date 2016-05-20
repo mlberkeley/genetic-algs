@@ -1,4 +1,5 @@
 
+import sympy as sy
 from function import add, Function
 from random import shuffle, choice
 
@@ -65,6 +66,20 @@ class Node(object):
         for child in self.children:
             descendants = descendants.union(child.descendants_and_self())
         return descendants
+
+    def all_floats(self):
+        """ Returns all float leaves.  If there are
+            no leaves, return [].
+
+            Returns:
+                list of Node objects
+        """
+        all_floats = [d
+                      for d
+                      in self.descendants_and_self()
+                      if d.func.arity == 0 and
+                      isinstance(d.func.func(), sy.Float)]
+        return all_floats
 
     def random_descendant(self, with_leaves=False):
         """ Returns a random descendant (not including itself).
