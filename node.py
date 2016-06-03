@@ -3,7 +3,9 @@ import sympy as sy
 from function import add, Function
 from random import shuffle, choice
 
-from ete3 import Tree as EteTree, TreeStyle, NodeStyle, faces, AttrFace
+from config import Cfg
+if Cfg.USE_ETE3:
+    from ete3 import Tree as EteTree, TreeStyle, NodeStyle, faces, AttrFace
 
 class Node(object):
     def __init__(self, func):
@@ -144,19 +146,33 @@ class Node(object):
         return None
 
     def ete_str_nosemi(self):
-        if self.children:
-            s = ",".join([c.ete_str_nosemi() for c in self.children])
-            return "({0}){1}".format(s, self.func.label)
+        # TODO document
+        if Cfg.USE_ETE3:
+            if self.children:
+                s = ",".join([c.ete_str_nosemi() for c in self.children])
+                return "({0}){1}".format(s, self.func.label)
+            else:
+                return self.func.label
         else:
-            return self.func.label
+            return ""
 
     def ete_str(self):
-        return "{0};".format(self.ete_str_nosemi())
+        # TODO document
+        if Cfg.USE_ETE3:
+            return "{0};".format(self.ete_str_nosemi())
+        else:
+            return ""
 
     def ete_print(self):
-        """ Pretty print. """
-        t = EteTree(self.ete_str(), format=1)
-        print(t.get_ascii(show_internal=True))
+        """ Pretty print.
+        
+            TODO Debug and document better for case USE_ETE3 == False
+        """
+        if Cfg.USE_ETE3:
+            t = EteTree(self.ete_str(), format=1)
+            print(t.get_ascii(show_internal=True))
+        else:
+            return str(self)
 
     def ete_draw(self, fname=None):
         """ Draws the tree and saves it to a file.  If `fname` is None,
@@ -165,21 +181,25 @@ class Node(object):
             Args:
                 fname: filename to save to (default=None)
         """
-        def layout(node):
-            faces.add_face_to_node(AttrFace("name"), node, column=0,
-                                   position="branch-right")
+        if Cfg.USE_ETE3:
+            def layout(node):
+                faces.add_face_to_node(AttrFace("name"), node, column=0,
+                                       position="branch-right")
 
-        ts = TreeStyle()
-        ts.show_leaf_name = False
-        ts.layout_fn = layout
-        ts.rotation = 90
-        
-        tree = EteTree(self.ete_str(), format=8)
+            ts = TreeStyle()
+            ts.show_leaf_name = False
+            ts.layout_fn = layout
+            ts.rotation = 90
+            
+            tree = EteTree(self.ete_str(), format=8)
 
-        if fname:
-            tree.render(fname, tree_style=ts)
+            if fname:
+                tree.render(fname, tree_style=ts)
+            else:
+                tree.show(tree_style=ts)
         else:
-            tree.show(tree_style=ts)
+            # TODO maybe throw an error?
+            pass
 
     def collapse(self):
         """ Returns the sympy function corresponding to this node.
@@ -188,6 +208,7 @@ class Node(object):
                 sympy Function
         """
         # TODO this is wrong!!!!!!!
+        # TODO is it wrong??
         if self.func.arity == 0:
             return self.func.evaluate()
         else:

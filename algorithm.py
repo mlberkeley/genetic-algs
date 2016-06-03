@@ -1,15 +1,21 @@
 
-# TODO ugly hack to appease Roy's laptop
-import matplotlib
-matplotlib.use("Qt4Agg")
-
-import matplotlib.pyplot as plt
-
-from random import random
+# TODO rearrange imports
+from config import Cfg
 
 import numpy as np
+from random import random
+
 from PIL import Image
-import moviepy.editor as mpy
+
+if Cfg.USE_MOVIEPY:
+    import moviepy.editor as mpy
+
+import matplotlib
+import matplotlib.pyplot as plt
+
+if Cfg.FORCE_QT4AGG:
+    # TODO ugly hack to appease Roy's laptop
+    matplotlib.use("Qt4Agg")
 
 from data import Data
 from evaluator import Evaluator
@@ -141,8 +147,9 @@ class Algorithm(object):
         fig.savefig("demo/fitness.png")
 
         # Animate pool
-        animation = mpy.ImageSequenceClip(gif_fnames, fps=1)
-        animation.write_gif("demo/animation.gif", fps=1)
+        if Cfg.USE_MOVIEPY:
+            animation = mpy.ImageSequenceClip(gif_fnames, fps=1)
+            animation.write_gif("demo/animation.gif", fps=1)
 
         # Return trees
         scores = [Evaluator.score(tree, data, node_var) for tree in trees]
